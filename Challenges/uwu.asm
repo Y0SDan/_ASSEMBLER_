@@ -210,8 +210,11 @@ CODESG SEGMENT PARA 'CODE'
 ;------------------------------------ Subrutinas esenciales ---------------------------------;
 
         leeChar_conEco PROC
+            PUSH AX
             MOV AH,01
             INT 21H
+            POP AX
+            
             RET
         leeChar_conEco ENDP
 
