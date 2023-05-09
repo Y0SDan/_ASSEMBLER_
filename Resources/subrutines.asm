@@ -1,11 +1,3 @@
-;Escribe un caracter en consola (El caracter debe estar en DL)
-ESCRIBE PROC
-   MOV AH,02
-   INT 21H
-    
-   RET
-ESCRIBE ENDP
-
 ;Escrbe un caracater en pantalla (el caracter debe estar en DL)
 escribeChar PROC
     PUSH AX
@@ -24,37 +16,29 @@ SALIR_DOS PROC
    RET
 SALIR_DOS ENDP
 
-;Imprime una cadena en consola (la cadena debe de estar en DX)
-MENSAJE PROC
-    PUSH AX
-    MOV AH,09H
-    INT 21H
-    POP AX
-
-    RET
-MENSAJE ENDP
-
 ;igual a mensaje pero el servicio es 09 en vez de 09H ¿habra alguna diffeencia?
 escribeCad PROC
     PUSH AX
-    MOV  AH,09
+    MOV  AH,09H
     INT  21H
     POP  AX
     
     RET
 escribeCad ENDP
-;¿?
-leercadena PROC
+
+;Lee una cadena de caracteres utilizando el buffer
+;La cadena debe de estar en DX
+leerCadena PROC
     PUSH DX
     PUSH AX
-    LEA DX,CADENA
-    MOV AH,0AH
-    INT 21H
-    POP AX
-    POP DX
+    LEA  DX,CADENA
+    MOV  AH,0AH
+    INT  21H
+    POP  AX
+    POP  DX
     
     RET
-leercadena ENDP
+leerCadena ENDP
 
 ;Lee un caracter con eco (desde teclado)
 leeChar_conEco PROC
@@ -169,23 +153,23 @@ POS_CUR PROC
 POS_CUR ENDP
 
 ;Limpia pantalla (la sobreescribe cn un color)
-limpiar_pantalla PROC
+limpiarPantalla PROC
     PUSH AX
     PUSH BX
     PUSH CX
     PUSH DX
-    MOV AX,0600h
-    MOV BH,71h      ; FONDO BLANCO CON PRIMER PLANO AZUL
-    MOV CX,0000H    ;coordenada inicial
-    MOV DX,184FH    ;coordenada final
-    INT 10h
-    POP DX
-    POP CX
-    POP BX
-    POP AX
+    MOV  AX,0600h    ;El servicio
+    MOV  BH,71h      ;Fondo blanco con primer plano azul
+    MOV  CX,0000H    ;coordenada inicial
+    MOV  DX,184FH    ;coordenada final
+    INT  10h
+    POP  DX
+    POP  CX
+    POP  BX
+    POP  AX
 
     RET
-limpiar_pantalla ENDP
+limpiarPantalla ENDP
 
 ;Imprime caracteres con colores
 Despliega9 PROC
@@ -279,16 +263,6 @@ ACTUAL PROC
     RET
 ACTUAL ENDP
 
-;Para camiar el modo video
-MODOVIDEO PROC
-    ; modo de video 
-    mov al, MODE 
-    mov ah, 0 
-    int 10h 
-
-    RET
-MODOVIDEO ENDP
-
 ;Entrada sin eco
 READKEY PROC
     MOV AH,07H
@@ -296,14 +270,14 @@ READKEY PROC
     RET 
 READKEY ENDP
 
-;¿?
-GRAPH PROC
-    MOV AH,00H
-    MOV AL,12H
+;Cambia el modo en que se muestra la consola (Modo video)
+graph PROC
+    SUB AX,AX
+    MOV AL,12H ;Modo gráfico 640 x 480
     INT 10H
     
     RET
-GRAPH ENDP
+graph ENDP
 
 ;¿?
 PUNTO PROC
@@ -326,24 +300,18 @@ DOS PROC
     RET
 DOS ENDP
 
-;Revisa que la tecla especial precionada 
-PREINI PROC NEAR    
-    MOV AH,10h
-    INT 16H
-    CMP AL,00H
-    JE RASTREA
-    CMP AL,0E0H
-    JE RASTREA
-    JMP SAL1
- RASTREA:
-    CMP AH,53H  ;Código de rastreao de la tecla F12
-    JNE SAL1
-    MOV AH,02
-    MOV BH,00
-    MOV DX,0C27H
-    INT 10H
-    LEA DX,MEN
-    MOV AH,09
-    int 21h
- SAL1: RET
-PREINI ENDP    
+;Revisa que tecla especial es precionada (debe estar en AL)
+keyStroke PROC NEAR    
+        MOV AH,10h
+        INT 16H
+        CMP AL,00H  ;Compara que sea 0
+        JE  YES
+        CMP AL,0E0H ;Compara que sea 0E0H esto para saber si es una tecal valida
+        JE  YES
+        JMP BYE
+ YES:   CMP AH,TECLA  ;Código de rastreao de la tecla 
+        JNE BYE
+        MOV AH,02
+        MOV BH,00
+ BYE:   RET
+keyStroke ENDP      
