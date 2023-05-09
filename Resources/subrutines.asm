@@ -7,14 +7,14 @@ ESCRIBE PROC
 ESCRIBE ENDP
 
 ;Escrbe un caracater en pantalla (el caracter debe estar en DL)
-escribe_car PROC
+escribeChar PROC
     PUSH AX
-    MOV AH,02 ; Caracter a desplegar almacenado en dl
-    INT 21h
-    POP AX
+    MOV  AH,02 ; Caracter a desplegar almacenado en dl
+    INT  21h
+    POP  AX
 
     RET
-escribe_car ENDP
+escribeChar ENDP
 
 ;Termina la ejecución del programa
 SALIR_DOS PROC
@@ -75,16 +75,16 @@ LEER_CSE PROC
 LEER_CSE ENDP
 
 ;Imprime un salto de linea y retorno de carro
-ALIMENTAR_L PROC
+salta PROC
     PUSH DX
     MOV  DL, 0AH
-    CALL ESCRIBIR_C
+    CALL escribeChar
     MOV  DL, 0DH
-    CALL ESCRIBIR_C
+    CALL escribeChar
     POP  DX
     
     RET
-ALIMENTAR_L ENDP
+salta ENDP
 
 ;Cnvierte de ascci a binario
 ascii_Bin PROC
@@ -108,7 +108,7 @@ ascii_Bin ENDP
 ;Convierte de binario a ascci
 binario_ascii PROC
          CMP DL,9h
-         JG SUMA37
+         JG  SUMA37
          ADD DL,30h
          JMP FIN2
  SUMA37: ADD DL,37h

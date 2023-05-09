@@ -7,20 +7,27 @@
 .DATA
    MEN  DB 'Ingresa cuantos pares quieres comprobar: $'
    MEN2 DB 'Escriba un numero: $'
+   CONT DB 100 DUP(?)                                   ;Reserva 100 de memoria pero no define su contenido
 
 .CODE
     MAIN PROC FAR
         ;Protocolo
         PUSH DS
-        SUB AX,AX
+        SUB  AX,AX
         PUSH AX
-        MOV AX,@DATA
-        MOV DS,AX
+        MOV  AX,@DATA
+        MOV  DS,AX
 
         ;Inicia programa
-        LEA DX,MEN
+        LEA  DX,MEN
         CALL escribeCad
-        CALL empaqueta
+        CALL empaqueta   ;Convierte de ascci a binario y lo guarda en AL
+        CALL salta
+        SUB  CX,CX       ;Asegurarse de que CX este en 0
+        MOV  CX,AL       ;Le asignamos al contador lop que devuelve empaqueta
+        SUB  BX,BX       
+        LEA  SI,CONT     ;Coloca el apuntador SI al inicio del "arreglo" CONT
+        
 
         RET
 
@@ -77,4 +84,25 @@
  
         FIN:    RET
     ascii_Bin ENDP
+
+    salta PROC
+        PUSH DX
+        MOV  DL, 0AH
+        CALL escribeChar
+        MOV  DL, 0DH
+        CALL escribeChar
+        POP  DX
+    
+        RET
+    salta ENDP
+
+    escribeChar PROC
+        PUSH AX
+        MOV  AH,02 ; Caracter a desplegar almacenado en dl
+        INT  21h
+        POP  AX
+
+        RET
+    escribeChar ENDP
+
 END MAIN
