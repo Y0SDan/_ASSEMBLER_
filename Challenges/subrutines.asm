@@ -1,14 +1,12 @@
-;Escrbe un caracater en pantalla (el caracter debe estar en DL)
 escribeChar PROC
     PUSH AX
-    MOV  AH,02 ; Caracter a desplegar almacenado en dl
+    MOV  AH,02 
     INT  21h
     POP  AX
 
     RET
 escribeChar ENDP
 
-;Termina la ejecución del programa
 SALIR_DOS PROC
    MOV AH,4CH
    INT 21H
@@ -16,7 +14,6 @@ SALIR_DOS PROC
    RET
 SALIR_DOS ENDP
 
-;igual a mensaje pero el servicio es 09 en vez de 09H ¿habra alguna diffeencia?
 escribeCad PROC
     PUSH AX
     MOV  AH,09H
@@ -26,8 +23,6 @@ escribeCad PROC
     RET
 escribeCad ENDP
 
-;Lee una cadena de caracteres utilizando el buffer
-;La cadena debe de estar en DX
 leerCadena PROC
     PUSH DX
     PUSH AX
@@ -40,7 +35,6 @@ leerCadena PROC
     RET
 leerCadena ENDP
 
-;Lee un caracter con eco (desde teclado)
 leeChar_conEco PROC
     PUSH AX
     MOV  AH,01
@@ -50,7 +44,6 @@ leeChar_conEco PROC
     RET
 leeChar_conEco ENDP
 
-;Leer caracter sin eco (i guess)
 LEER_CSE PROC
     MOV AH,08
     INT 21H
@@ -58,7 +51,6 @@ LEER_CSE PROC
     RET
 LEER_CSE ENDP
 
-;Imprime un salto de linea y retorno de carro
 salta PROC
     PUSH DX
     MOV  DL, 0AH
@@ -70,7 +62,6 @@ salta PROC
     RET
 salta ENDP
 
-;Cnvierte de ascci a binario
 ascii_Bin PROC
             CMP AL,30h
             JL  ERROR
@@ -89,7 +80,6 @@ ascii_Bin PROC
     FIN:    RET
 ascii_Bin ENDP
 
-;Convierte de binario a ascci
 binario_ascii PROC
          CMP DL,9h
          JG  SUMA37
@@ -100,7 +90,6 @@ binario_ascii PROC
  FIN2: RET
 binario_ascii ENDP
 
-;lee caracteres (2 nibles) y lo convierte a binario (Compromete DL )
 empaqueta PROC
     PUSH CX
     CALL leeChar_conEco
@@ -116,7 +105,6 @@ empaqueta PROC
     RET
 empaqueta ENDP
 
-;Toma el bianrio y lo convierte a caracter
 desempaqueta PROC
     PUSH DX
     PUSH CX
@@ -135,15 +123,14 @@ desempaqueta PROC
     RET
 desempaqueta ENDP
 
-;Posiciona el Cursor en donde queremos
 POS_CUR PROC
     PUSH AX
     PUSH BX
     PUSH DX
     MOV AH,02
     MOV BH,0
-    MOV DH,RENGLON ; RENGLON
-    MOV DL,COLUMNA ; COLUMNA
+    MOV DH,RENGLON 
+    MOV DL,COLUMNA 
     INT 10h
     POP DX
     POP BX
@@ -152,16 +139,15 @@ POS_CUR PROC
     RET
 POS_CUR ENDP
 
-;Limpia pantalla (la sobreescribe cn un color)
 limpiarPantalla PROC
     PUSH AX
     PUSH BX
     PUSH CX
     PUSH DX
-    MOV  AX,0600h    ;El servicio
-    MOV  BH,71h      ;Fondo blanco con primer plano azul
-    MOV  CX,0000H    ;coordenada inicial
-    MOV  DX,184FH    ;coordenada final
+    MOV  AX,0600h  
+    MOV  BH,71h    
+    MOV  CX,0000H  
+    MOV  DX,184FH  
     INT  10h
     POP  DX
     POP  CX
@@ -171,11 +157,10 @@ limpiarPantalla PROC
     RET
 limpiarPantalla ENDP
 
-;Imprime caracteres con colores
 Despliega9 PROC
     PUSH BX
     PUSH CX
-    MOV AH,09 ; RECORDAR QUE EL CARACTER ESTA ALMACENADO EN AL
+    MOV AH,09 
     MOV BH,00
     MOV BL, ATRIBUTO
     MOV CX, NUMERO
@@ -186,43 +171,38 @@ Despliega9 PROC
     RET
 Despliega9 ENDP
 
-;Planta una semilla para el numero pseudoaleatorio
 SEMILLA PROC
     PUSH AX
     MOV AH,2CH
-    INT 21H  ; RETORNA CH=HORAS, EN FORMATO 00-23, MEDIANOCHE=0
-         ; CL MINUTOS 00-59
-         ;DH SEGUNDOS 00-59
-         ;DL CENTESIMAS DE SEGUNDO 00-99
+    INT 21H 
     POP AX
 
     RET
 SEMILLA ENDP
 
-;Genera un numero pseudoaleatorio
 ALEATORIO PROC
-    ; XN+1=(2053*XN + 13849)MOD 2**16
-    ; RETORNA EL NUMERO PSEUDOALEATORIO EN AX
-    MOV AX,DX ;CARGANDO A AX EL NUMERO SEMILLA tomado de la int 21 serv             2CH
-    MOV DX,0  ;CARGANDO CERO EN LA POSICION MAS SIGNIFICATIVA DEL               MULTIPLICANDO
-    MOV BX,2053 ; MULTIPLICADOR
+
+
+    MOV AX,DX 
+    MOV DX,0  
+    MOV BX,2053 
     MUL BX
-    MOV BX,13849 ;CARGA EN BX LA CONSTANTE ADITIVA
+    MOV BX,13849 
     CLC
-    ADD AX,BX ; SUMA PARTES MENOS SIGNIFICATIVAS DEL RESULTADO
-    ADC DX,0 ; SUMA EL ACARREO SI ES NECESARIO
-    MOV BX,0FFFFH ; CARGAR LA CONSTANTE 2**16-1
+    ADD AX,BX
+    ADC DX,0 
+    MOV BX,0FFFFH 
     DIV BX
-    MOV AX,DX ; MUEVE EL RESIDUO  AX
+    MOV AX,DX
     
     RET
 ALEATORIO ENDP
 
-;Establece el rango del numero pseudoaleatorio usando el modulo
+
 ESCALANDO PROC
-   ; ESCALANDO EL NUMERO PSEUDOALEATORIO OBTENIDO
+
    MOV DX,0
-   MOV BX,00FFH ;NUMEROS ALEATORIOS ENTRE 0 Y 9
+   MOV BX,00FFH 
    DIV BX
    MOV AX,DX
    mov dl,ah
@@ -234,9 +214,9 @@ ESCALANDO PROC
    RET
 ESCALANDO ENDP
 
-;Para pintar un pixel
+
 PIXEL PROC
-    ;Subrutina p?xel
+
     PUSH AX
     PUSH BX
     PUSH CX
@@ -255,7 +235,6 @@ PIXEL PROC
     RET
 PIXEL ENDP
 
-;Para saber donde esta el curso actualmente
 ACTUAL PROC
     MOV AH,0Fh
     INT 10H
@@ -263,35 +242,31 @@ ACTUAL PROC
     RET
 ACTUAL ENDP
 
-;Entrada sin eco
 READKEY PROC
     MOV AH,07H
     INT 21H
     RET 
 READKEY ENDP
 
-;Cambia el modo en que se muestra la consola (Modo video)
 graph PROC
     SUB AX,AX
-    MOV AL,12H ;Modo gráfico 640 x 480
+    MOV AL,12H 
     INT 10H
     
     RET
 graph ENDP
 
-;Dibuja un pixel
 PUNTO PROC
-    MOV AH,0CH      ;el servicio
-    MOV AL,COLOR    ;el color 
+    MOV AH,0CH      
+    MOV AL,COLOR    
     MOV BH,0      
-    MOV CX,Y        ;coordenadas
+    MOV CX,Y        
     MOV DX,X
     INT 10H
     
     RET
 PUNTO ENDP
 
-;Es para poder modo de texto 3 es el estandar el normal el comun y corriente
 DOS PROC
     MOV AH,00H
     MOV AL,03H
@@ -300,16 +275,15 @@ DOS PROC
     RET
 DOS ENDP
 
-;Revisa que tecla especial es precionada (debe estar en AL)
 keyStroke PROC NEAR    
         MOV AH,10h
         INT 16H
-        CMP AL,00H  ;Compara que sea 0
+        CMP AL,00H
         JE  YES
-        CMP AL,0E0H ;Compara que sea 0E0H esto para saber si es una tecal valida
+        CMP AL,0E0H
         JE  YES
         JMP BYE
- YES:   CMP AH,TECLA  ;Código de rastreao de la tecla 
+ YES:   CMP AH,TECLA 
         JNE BYE
         MOV AH,02
         MOV BH,00

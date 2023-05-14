@@ -36,7 +36,7 @@
                DEC  SI              ;hacer referencia al final de la cadena leida
                LOOP CICLO
                CALL limpiarPantalla
-        RKEY:  CALL keyStroke             
+        ;RKEY:  CALL keyStroke             
 
                RET
 
@@ -81,7 +81,7 @@
         MOV  AX,0600h    ;El servicio
         MOV  BH,71h      ;Fondo blanco con primer plano azul
         MOV  CX,0000H    ;coordenada inicial
-        MOV  DX,184FH    ;coordenada final
+        MOV  DX,254FH    ;coordenada final |parte alta (Renglones)|parte baja (columnas)|
         INT  10h
         POP  DX
         POP  CX
@@ -106,13 +106,13 @@
      BYE:   RET
     keyStroke ENDP    
 
-    ;Posiciona el cursos para imprimir la cadena lo mas centrada posible
+    ;Posiciona el cursor para imprimir la cadena lo mas centrada posible
     centro PROC
         MOV AH,0
         MOV AL,CADENA + 1
         MOV BL,2
         DIV BL
-        MOV DL,40
+        MOV DL,40   ;DL -> Columnas DH -> Filas
         SUB DL,AL
 
         RET
