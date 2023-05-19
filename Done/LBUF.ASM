@@ -72,6 +72,7 @@ POP DX
 RET
 leercadena ENDP
 
+;Escribe Cadena 
 MENSAJE PROC
 PUSH AX
 MOV AH,09H
@@ -80,6 +81,7 @@ POP AX
 RET
 MENSAJE ENDP
 
+;Leer char con eco
 LEE PROC
 PUSH AX
 MOV AH,01

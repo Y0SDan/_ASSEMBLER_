@@ -18,7 +18,7 @@
 
         ;START---------------------------------
         ;Modificamos DS (podriamos usar una variable o un registro)
-REPD:   SUB AX,AX           ;AX = 0
+        SUB AX,AX           ;AX = 0
         MOV AX,073FH        ;AX = 073F
         MOV DS,AX           ;Nos colocamos en el segmento de datos correspondiente
         MOV AX,DS           ;colocamos a AX el segmento de datos para poder imprimirlo
@@ -44,41 +44,7 @@ REPD:   SUB AX,AX           ;AX = 0
 
         CALL espacio        ;Escribimos un espacio " "
 
-        ;Loop que va imprimiendo los 16 siguientes valores 
-             MOV  CX,010H
-        L:   MOV  AL,[DI]
-             MOV  DL,AL
-             CALL desempaqueta
-             CMP  CX,09H
-             JE   GUI
-             CALL espacio
-        SIG: INC  DI
-             LOOP L
-             JMP  F1N
-        GUI: CALL guion
-             JMP  SIG
 
-        F1N: 
-
-        CALL espacio
-        CALL espacio
-        CALL espacio
-
-        MOV DI,DRIP        ;Movemos el apuntador a 100 (que es como esta por default)
-        
-             MOV CX,010H
-        LP:  MOV DL,[DI]
-             CALL escribeChar
-             INC DI
-             LOOP LP
-             ADD DRIP, 10H
-        
-        call salta
-        DEC CONT
-        CMP CONT, 0
-        JE REPD
-
-        RET
 
         
     MAIN ENDP
