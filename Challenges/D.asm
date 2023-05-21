@@ -1,0 +1,1453 @@
+ 
+;PRJ2
+ 
+ 
+STACKSG SEGMENT PARA STACK 'PILA'
+ 
+    DB 20 DUP(0)
+ 
+STACKSG ENDS
+ 
+ 
+DATASG SEGMENT PARA 'DATA'
+ 
+    TITL DB '             SISTEMA DOS ;V             $'
+ 
+    DEBG DB 'DEBUG$'
+ 
+    SALLLT DB 'SALIR$'
+ 
+    CARRRI DB 'GGGGGGG88888888888888888888GGGGGXGGGGGG87777777777777777777F80GGGXGGGGG87777777777777777777F880GGGXGGGG8FFFFFFFFFFFFFFFFFFFF8880GGGXGGG8F777777777777777777778880GGGXGGG8F788888888888888888F78880GGGXGGG8F700000000000000001F78880GGGX'
+ 
+    CARRI2 DB 'GGG8F709999999999999991F78880GGGXGGG8F709C99999999999991F78880GGGXGGG8F709C90000000999991F78880GGGXGGG8F709998FFFFF0999991F78880GGGXGGG8F709998FF1111110991F78880GGGXGGG8F709998FF8FFFFF0991F78880GGGXGGG8F709990008FFFFF0991F78880GGGX'
+ 
+    CARRI3 DB 'GGG8F709999998FFFFF0991F78880GGGXGGG8F709999990000000991F78880GGGXGGG8F709999999999999991F78880GGGXGGG8F711111111111111111F78880GGGXGGG8F7FFFFFFFFFFFFFFFFFF78880GGGXGGG8F77777777777777777777880888GXGGG88888888888888888888888088780X'
+ 
+    CARRI4 DB 'GGG00000000000000000000000887880XG8888888888888888888888888878880X8FFFFFFFFFFFFFFFFFFFFFFFFFF88880X8F777777777777777777777777788880X8F777777777778888888888887788880X8F77AA77777770000000000007788880X8F772277777777777777787777788880X'
+ 
+    CARRI5 DB '8F77777777777777777777777778880GX8F7777777777777777777777777880GGX88888888888888888888888888880GGGXG000000000000000000000000000GGGG$'
+ 
+    POSXICO DW ?
+ 
+    POSYICO DW ?
+ 
+    APPAI DB 'GGGGGGG888888888888888888888GGGGXGGGGGG87777777777777777777F80GGGXGGGGG87777777777777777777F880GGGXGGGG8FFFFFFFFFFFFFFFFFFFF8880GGGXGGG8F777777777777777777778880GGGXGGG8F788888888888888888F78880GGGXGGG8F700000000000000000F78880GGGX'
+ 
+    APPA2 DB 'GGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGX'
+ 
+    APPA3 DB 'GGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F700000000000000000F78880GGGXGGG8F7FFFFFFFFFFFFFFFFFF78880GGGXGGG8F77777777777777777777880888GXGGG88888888888888888888888088780X'
+ 
+    APPA4 DB 'GGG00000000000000000000000887880XG8888888888888888888888888878880X8FFFFFFFFFFFFFFFFFFFFFFFFFF88880X8F777777777777777777777777788880X8F777777777778888888888887788880X8F77AA77777770000000000007788880X8F772277777777777777787777788880X'
+ 
+    APPA5 DB '8F77777777777777777777777778880GX8F7777777777777777777777777880GGX88888888888888888888888888880GGGXG000000000000000000000000000GGGG$'
+ 
+    SELECT DB 0
+ 
+    INGRESO DB 100, ?, 100 DUP('$'), '$'
+ 
+    ARGC DB 0
+ 
+    ARGV DB 100 DUP('$')
+ 
+    RDS DW 0
+ 
+    DRIP DW 0
+ 
+    BERROR DB 0
+ 
+    INICIOD DW 100H
+ 
+    INICIODF DW 0
+ 
+    FIND DW 0
+ 
+    CONTCAR DB 0
+ 
+    MSGERR DB  'ERROR$$'
+ 
+    DESP DB  "  $"
+ 
+    QESP DB  "     $"
+ 
+    CONT DB 8
+ 
+    ESPACIO_INI DB 0
+ 
+DATASG ENDS
+ 
+ 
+CODESG SEGMENT PARA  'CODIGO'
+ 
+MAIN PROC FAR
+ 
+    ASSUME SS:STACKSG, DS:DATASG, CS:CODESG   
+ 
+    PUSH DS
+ 
+    SUB AX,AX
+ 
+    PUSH AX
+ 
+    MOV AX, SEG DATASG
+ 
+    MOV DS, AX
+ 
+    
+ 
+    ;INICIO DEL PROGRAMA ;V
+ 
+    PRINC:
+ 
+    MOV RDS, DS
+ 
+    CALL GRAPH
+ 
+    PRINCG:
+ 
+    CALL LIMPIAP_G
+ 
+    MOV DX, 0
+ 
+    MOV AH, 2
+ 
+    MOV BX,0
+ 
+    INT 10H
+ 
+    MOV DX, OFFSET TITL
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    ;-----------------------------ICONO DEBUG------------------------------------------------------
+ 
+    
+ 
+    CALL GRAPHSE
+ 
+    MOV POSXICO, 10
+ 
+    MOV POSYICO, 15
+ 
+    LEA SI, CARRRI
+ 
+    CALL GRAPHICO
+ 
+    MOV DH, 6
+ 
+    MOV DL, 1
+ 
+    MOV AH, 2
+ 
+    MOV BX,0
+ 
+    INT 10H
+ 
+    LEA DX, DEBG
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    ;------------------------------ICONO APAGADO----------------------------------------------------
+ 
+    MOV POSXICO, 250
+ 
+    MOV POSYICO, 150
+ 
+    LEA SI, APPAI
+ 
+    CALL GRAPHICO
+ 
+    MOV DH, 23
+ 
+    MOV DL, 31
+ 
+    MOV AH, 2
+ 
+    MOV BX,0
+ 
+    INT 10H
+ 
+    LEA DX, SALLLT
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    ;----------------------------------TECLADO-----------------------------------------------
+ 
+    CALL  TECL
+ 
+    CMP AH, 01CH
+ 
+    JNE PRINCG  ;SI NO SE HA PRECIONADO UN ENTER
+ 
+    CMP SELECT, 0
+ 
+    JE DEBUGP
+ 
+    CMP SELECT, 1
+ 
+    JE SALIR
+ 
+    JMP PRINCG
+ 
+    DEBUGP:
+ 
+    CALL DEBUG
+ 
+    JMP PRINC
+ 
+    SALIR:
+ 
+    CALL TEXT
+ 
+    CALL SALIR_DOS
+ 
+    RET
+ 
+ENDP MAIN
+ 
+;-----------------------------------------SUBRUTINAS GRAFICADORAS------------------------------------
+ 
+GRAPH PROC
+ 
+    MOV AH, 0
+ 
+    MOV AL, 13H
+ 
+    INT 10H
+ 
+    RET
+ 
+GRAPH ENDP
+ 
+ 
+LIMPIAP_G PROC
+ 
+    PUSH AX
+ 
+    PUSH BX
+ 
+    PUSH CX
+ 
+    PUSH DX
+ 
+    MOV AX, 0600H
+ 
+    MOV BH, 22H
+ 
+    MOV CX, 0000H
+ 
+    MOV DX, 184FH
+ 
+    INT 10H
+ 
+    POP DX
+ 
+    POP CX
+ 
+    POP BX
+ 
+    POP AX
+ 
+    RET
+ 
+LIMPIAP_G ENDP
+ 
+ 
+GRAPHSE PROC
+ 
+    MOV AL, 07H
+ 
+    MOV AH, 0CH
+ 
+    MOV BX, 0
+ 
+    CMP SELECT, 0
+ 
+    JE DEBUGS
+ 
+    MOV DX, 145
+ 
+    CICLO1SES:
+ 
+    MOV CX, 245
+ 
+    CICLO2SES:
+ 
+    INT 10H
+ 
+    INC CX
+ 
+    CMP CX, 290
+ 
+    JE BRINCARSES
+ 
+    JMP CICLO2SES
+ 
+    BRINCARSES:
+ 
+    MOV CX,5
+ 
+    INC DX
+ 
+    CMP DX, 195
+ 
+    JE FINNSE
+ 
+    JMP CICLO1SES 
+ 
+DEBUGS:
+ 
+    MOV DX, 10
+ 
+    CICLO1SED:
+ 
+    MOV CX, 5
+ 
+    CICLO2SED:
+ 
+    INT 10H
+ 
+    INC CX
+ 
+    CMP CX, 50
+ 
+    JE BRINCARSED
+ 
+    JMP CICLO2SED
+ 
+    BRINCARSED:
+ 
+    MOV CX,5
+ 
+    INC DX
+ 
+    CMP DX, 60
+ 
+    JE FINNSE
+ 
+    JMP CICLO1SED 
+ 
+    FINNSE:
+ 
+    RET
+ 
+GRAPHSE ENDP
+ 
+ 
+GRAPHICO PROC ;COMPROMETE AL REGISTRO SI, Y ADEMAS LA VARIABLE POSXICO Y POSYICO
+ 
+    PUSH CX ;PARA X
+ 
+    PUSH DX ;PARA Y
+ 
+    PUSH AX
+ 
+    PUSH BX
+ 
+    MOV BX, 0000H
+ 
+    MOV AH, 0CH
+ 
+    MOV CX, POSXICO
+ 
+    MOV DX, POSYICO
+ 
+    CICLOGR:
+ 
+    MOV AL, [SI]
+ 
+    CMP AL, "X"
+ 
+    JE BRINCAGR
+ 
+    CMP AL, 36
+ 
+    JE FINNGR
+ 
+    CMP AL,  "G"
+ 
+    JE TRANGR
+ 
+    CALL ASCII_BINARIO
+ 
+    INT 10H
+ 
+    INC SI
+ 
+    INC CX
+ 
+    JMP CICLOGR
+ 
+    BRINCAGR:
+ 
+    INC DX
+ 
+    MOV CX, POSXICO
+ 
+    INC SI
+ 
+    JMP CICLOGR
+ 
+    TRANGR:
+ 
+    INC CX
+ 
+    INC SI
+ 
+    JMP CICLOGR
+ 
+    FINNGR:
+ 
+    POP BX
+ 
+    POP AX
+ 
+    POP DX
+ 
+    POP CX
+ 
+    RET
+ 
+GRAPHICO ENDP
+ 
+   ;---------------------------------------DEBUG-------------------------------------------------
+ 
+DEBUG PROC
+ 
+    CALL TEXT
+ 
+    MOV DX, 0000
+ 
+    MOV AH, 2
+ 
+    MOV BX, 0
+ 
+    INT 10H
+ 
+INITDBG:
+ 
+    MOV BERROR, 0
+ 
+    MOV DL, '-'
+ 
+    CALL ESCRIBIR_C
+ 
+    CALL LEE_CAD
+ 
+    LEA SI, INGRESO+2
+ 
+    CALL SALTA_L
+ 
+    CALL QUITA_E
+ 
+    MOV AL, [SI]
+ 
+    CMP AL, 'q'
+ 
+    JE FINDBG
+ 
+    CMP AL, 'Q'
+ 
+    JE FINDBG
+ 
+    CMP AL, 'e'
+ 
+    JE DBGEP
+ 
+    CMP AL, 'E'
+ 
+    JE DBGEP
+ 
+    CMP AL, 'd'
+ 
+    JMP DBGDP
+ 
+    CMP AL, 'D'
+ 
+    JMP DBGDP
+ 
+    JMP INITDBG
+ 
+    
+ 
+    DBGEP:
+ 
+        CALL DBGE
+ 
+        MOV BERROR, 0
+ 
+        JMP INITDBG
+ 
+    DBGDP:
+ 
+    CALL DBGD
+ 
+    MOV BERROR, 0
+ 
+    JMP INITDBG
+ 
+    FINDBG:
+ 
+    RET
+ 
+DEBUG ENDP
+ 
+    ;--------------------------------------COMANDO E---------------------------------------------
+ 
+DBGE PROC
+ 
+    ;CALL SALTA_L
+ 
+    INC SI
+ 
+    MOV BX, 0
+ 
+    CALL ARGUMENTOS_E; CHECA LOS ARGUMENTOS ESCRITOS V;
+ 
+    CMP BERROR, 1
+ 
+    JE SALIR_E
+ 
+    MOV AX, INICIOD
+ 
+    MOV DRIP, AX ;MUEVE A NUESTRO DESPLASADOR V;
+ 
+    CMP ARGC, 0 ;CHECA SI HUBO ARGUMENTOS V;
+ 
+    JG CON_ARGSE
+ 
+    CALL SINARGS_E
+ 
+    JMP SALIR_E
+ 
+    
+ 
+    CON_ARGSE:
+ 
+    CALL CONARGS_E
+ 
+    SALIR_E:
+ 
+    RET
+ 
+DBGE ENDP
+ 
+ 
+SINARGS_E PROC
+ 
+    RENGLON_SINARGS:
+ 
+    CALL SALTA_L
+ 
+    CALL IMP_DIR
+ 
+    LEA DX, DESP
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    MOV CONTCAR, 0
+ 
+    
+ 
+    INDIVI_SINARGS:
+ 
+    MOV BX, 0
+ 
+    MOV DI, [DRIP]
+ 
+    MOV DL, [DI]
+ 
+    CALL DESEMPAQUETAR
+ 
+    MOV DL, '.'
+ 
+    CALL ESCRIBIR_C
+ 
+    MOV CX,2
+ 
+    LECT_SINARGS:
+ 
+    CALL LEEC
+ 
+    CMP AL, '-'
+ 
+    JE GUION
+ 
+    CMP AL, 32
+ 
+    JE ESPACIO_E
+ 
+    CALL ASCII_BINARIO
+ 
+    CMP BERROR,1
+ 
+    JE SALIR_SINARGS
+ 
+    PUSH CX
+ 
+    MOV CL, 4
+ 
+    SHL BL, CL
+ 
+    ADD BL, AL
+ 
+    POP CX
+ 
+    LOOP LECT_SINARGS
+ 
+    JMP ESPACIO_E
+ 
+    
+ 
+    EL_CONTEO:
+ 
+    INC DRIP
+ 
+    INC CONTCAR
+ 
+    CMP CONTCAR, 8
+ 
+    JE RENGLON_SINARGS
+ 
+    JMP INDIVI_SINARGS
+ 
+    
+ 
+    ESPACIO_E:
+ 
+    MOV [DI], BL
+ 
+    LEA DX, DESP
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    JMP EL_CONTEO
+ 
+    
+ 
+    ESP_CUA:
+ 
+    LEA DX, QESP
+ 
+    MOV AH, 09
+ 
+    INT 21H
+ 
+    JMP EL_CONTEO
+ 
+    
+ 
+    GUION:
+ 
+    CALL SALTA_L
+ 
+    DEC DRIP
+ 
+    JMP RENGLON_SINARGS
+ 
+    
+ 
+    SALIR_SINARGS:
+ 
+    CALL SALTA_L
+ 
+    RET
+ 
+SINARGS_E ENDP
+ 
+ 
+CONARGS_E PROC
+ 
+    MOV SI, DRIP
+ 
+    LEA DI, ARGV
+ 
+    MOV CL, ARGC
+ 
+    MOV CH, 0
+ 
+    CICLO_CONARGSE:
+ 
+    MOV BL, [DI]
+ 
+    MOV [SI], BL
+ 
+    INC SI
+ 
+    INC DI
+ 
+    LOOP CICLO_CONARGSE
+ 
+    CALL SALTA_L
+ 
+    RET
+ 
+CONARGS_E ENDP
+ 
+    
+ 
+    ;--------------------------------------COMANDO D---------------------------------------------
+ 
+DBGD PROC
+ 
+    MOV CONT, 8
+ 
+    INC SI
+ 
+    CALL QUITA_E
+ 
+    CALL EXTRAE_INI
+ 
+    MOV AX, INICIOD
+ 
+    MOV DRIP, AX
+ 
+    
+ 
+    CICLO_D:
+ 
+    CALL IMP_DIR
+ 
+    MOV DI, AX
+ 
+    CALL ESPACIO_D
+ 
+    MOV CX, 10H
+ 
+    L:
+ 
+    MOV AL, [DI]
+ 
+    MOV DL, AL
+ 
+    CALL DESEMPAQUETAR
+ 
+    CMP CX, 09H
+ 
+    JE GUI
+ 
+    CALL ESPACIO_D
+ 
+    SIG1:
+ 
+    INC DI
+ 
+    LOOP L
+ 
+    JMP F1N
+ 
+    GUI:
+ 
+    CALL GUION_D
+ 
+    JMP SIG1
+ 
+    F1N:
+ 
+    CALL ESPACIO_D
+ 
+    CALL ESPACIO_D
+ 
+    CALL ESPACIO_D
+ 
+    
+ 
+    MOV DI, DRIP
+ 
+    MOV CX, 010H
+ 
+    LP:MOV DL, [DI]
+ 
+    CMP DL, 32
+ 
+    JL PUNTO
+ 
+    CALL ESCRIBIR_C
+ 
+    JMP SALTITO
+ 
+    PUNTO:
+ 
+    MOV DL, 46
+ 
+    CALL ESCRIBIR_C
+ 
+    SALTITO:
+ 
+    INC DI
+ 
+    LOOP LP
+ 
+    ADD DRIP, 10H
+ 
+    CALL SALTA_L
+ 
+    DEC CONT
+ 
+    CMP CONT, 0
+ 
+    JNE CICLO_D
+ 
+    RET
+ 
+DBGD ENDP
+ 
+ 
+    ;--------------------------------------SUBRUTINAS ESPECIALES---------------------------------
+ 
+ARGUMENTOS_E PROC ;SI YA APUNTA ANTES DE LA INSTRUCCION
+ 
+    PUSH AX
+ 
+    PUSH BX
+ 
+    PUSH CX
+ 
+    PUSH DX
+ 
+    
+ 
+    LEA DI, ARGV
+ 
+    CALL QUITA_E
+ 
+    CALL EXTRAE_INI
+ 
+    CMP BERROR, 1
+ 
+    JE ARGS_ERR
+ 
+    CALL QUITA_E
+ 
+    MOV DX, 0
+ 
+    MOV CH, 0
+ 
+    MOV CL, 4
+ 
+    MOV BL, 0
+ 
+    CICLO_ARGE:
+ 
+    MOV AL, [SI]
+ 
+    CMP AL, 0DH
+ 
+    JE FINARGS
+ 
+    CMP AL, "$"
+ 
+    JE FINARGS
+ 
+    CMP AL, 20H
+ 
+    JE ESPARGS
+ 
+    CMP DL, 2
+ 
+    JE ARGS_ERR
+ 
+    
+ 
+    CALL ASCII_BINARIO
+ 
+    CMP BERROR, 1
+ 
+    JE ARGS_ERR
+ 
+    
+ 
+    SHL BL, CL
+ 
+    ADD BL, AL
+ 
+    INC DL
+ 
+    INC SI
+ 
+    JMP CICLO_ARGE
+ 
+    
+ 
+    ESPARGS:
+ 
+    INC ARGC
+ 
+    MOV DL, 0
+ 
+    MOV [DI], BL
+ 
+    INC DI
+ 
+    MOV BL, 0
+ 
+    CALL QUITA_E
+ 
+    JMP CICLO_ARGE
+ 
+    
+ 
+    
+ 
+    FINARGS:
+ 
+    LEA DI, ARGV
+ 
+    MOV AL, [DI]
+ 
+    CMP AL, "$"
+ 
+    JNE SIIARGS
+ 
+    JMP DEMAS
+ 
+    SIIARGS:
+ 
+    INC ARGC
+ 
+    JMP DEMAS
+ 
+    DEMAS:
+ 
+    MOV BERROR, 0
+ 
+    JMP FINNARGS
+ 
+    
+ 
+    ARGS_ERR:
+ 
+    MOV AH, 09
+ 
+    LEA DX, MSGERR
+ 
+    INT 21H
+ 
+    CALL SALTA_L
+ 
+    MOV BERROR, 1
+ 
+    JMP FINNARGS
+ 
+    
+ 
+    FINNARGS:
+ 
+    POP DX
+ 
+    POP CX
+ 
+    POP BX
+ 
+    POP AX
+ 
+    RET
+ 
+ARGUMENTOS_E ENDP
+ 
+ 
+QUITA_E PROC
+ 
+    ;RECIBIR? EN SI
+ 
+    CICLO_QUITAE:
+ 
+    MOV BL, [SI]
+ 
+    CMP BL, 32
+ 
+    JNE FINQE
+ 
+    INC SI
+ 
+    JMP CICLO_QUITAE
+ 
+    FINQE:
+ 
+    RET
+ 
+QUITA_E ENDP
+ 
+ 
+EXTRAE_INI PROC ;EXTRAE LA DIRECCION INICIAL, PUESTO EN SI, LA PONDRA EN LA VARIABLE INICIOD
+ 
+    SUB DX, DX
+ 
+    SUB AX, AX
+ 
+    MOV BX, 0
+ 
+    MOV CL, 4
+ 
+    MOV AL, [SI]
+ 
+    CMP AL, 20H
+ 
+    JE NINGUN_N
+ 
+    CMP AL, 0DH
+ 
+    JE NINGUN_N
+ 
+    CICLO_EXTI:
+ 
+    MOV AL, [SI]
+ 
+    CALL ASCII_BINARIO
+ 
+    CMP BERROR, 1
+ 
+    JE FIN_EXTI
+ 
+    SHL DX,CL
+ 
+    ADD DL, AL
+ 
+    INC SI
+ 
+    JMP CICLO_EXTI
+ 
+    FIN_EXTI:
+ 
+    CMP AL, 20H
+ 
+    JE NOERR
+ 
+    CMP AL, 0DH
+ 
+    JE NOERR
+ 
+    JMP FINEXTI
+ 
+    NOERR:
+ 
+    MOV BERROR,0
+ 
+    JMP FINEXTI
+ 
+    NINGUN_N:
+ 
+    MOV INICIOD, 100H
+ 
+    MOV BERROR, 2
+ 
+    JMP FINEXTI
+ 
+    FINEXTI:
+ 
+    MOV INICIOD, DX
+ 
+    RET
+ 
+EXTRAE_INI ENDP    
+ 
+ 
+EXTRAE_FIN PROC ;EXTRAE LA DIRECCION FIN, PUESTO EN SI, LA PONDRA EN LA VARIABLE FIND
+ 
+    SUB DX, DX
+ 
+    SUB AX, AX
+ 
+    MOV BX, 0
+ 
+    MOV CL, 4
+ 
+    MOV AL, [SI]
+ 
+    CMP AL, 20H
+ 
+    JE NINGUN_NF
+ 
+    CMP AL, 0DH
+ 
+    JE NINGUN_NF
+ 
+    CICLO_EXTF:
+ 
+    MOV AL, [SI]
+ 
+    CALL ASCII_BINARIO
+ 
+    CMP BERROR, 1
+ 
+    JE FIN_EXTF
+ 
+    SHL DX,CL
+ 
+    ADD DL, AL
+ 
+    INC SI
+ 
+    JMP CICLO_EXTF
+ 
+    FIN_EXTF:
+ 
+    CMP AL, 20H
+ 
+    JE NOERRF
+ 
+    CMP AL, 0DH
+ 
+    JE NOERRF
+ 
+    JMP FINEXTI
+ 
+    NOERRF:
+ 
+    MOV BERROR,0
+ 
+    JMP FINEXTI
+ 
+    NINGUN_NF:
+ 
+    MOV FIND, 0
+ 
+    MOV BERROR, 2
+ 
+    JMP FINEXTF
+ 
+    FINEXTF:
+ 
+    MOV FIND, DX
+ 
+    RET
+ 
+EXTRAE_FIN ENDP 
+ 
+ 
+ 
+IMP_DIR PROC
+ 
+    PUSH BX
+ 
+    MOV BX, RDS
+ 
+    MOV DL, BH
+ 
+    CALL DESEMPAQUETAR
+ 
+    MOV DL, BL
+ 
+    CALL DESEMPAQUETAR
+ 
+    MOV DL, 58
+ 
+    CALL ESCRIBIR_C
+ 
+    MOV BX, DRIP
+ 
+    MOV DL, BH
+ 
+    CALL DESEMPAQUETAR
+ 
+    MOV DL, BL
+ 
+    CALL DESEMPAQUETAR
+ 
+    POP BX
+ 
+    RET
+ 
+IMP_DIR ENDP
+ 
+ 
+    
+ 
+   ;---------------------------------------SUBRUTINAS ESTANDAR------------------------------------
+ 
+ASCII_BINARIO PROC
+ 
+   CMP AL,30H
+ 
+   JL ERROR
+ 
+   CMP AL,39H
+ 
+   JG LETRA
+ 
+   SUB AL, 30H
+ 
+   JMP FIN
+ 
+LETRA:     
+ 
+   CMP AL, 41H
+ 
+   JL ERROR
+ 
+   CMP AL,46H
+ 
+   JG LETRAMIN
+ 
+   SUB AL, 37H
+ 
+   JMP FIN
+ 
+LETRAMIN:
+ 
+   CMP AL, 97
+ 
+   JL ERROR
+ 
+   CMP AL, 102
+ 
+   JG ERROR
+ 
+   SUB AL, 87
+ 
+   JMP FIN
+ 
+   ERROR:   
+ 
+   MOV BERROR,1
+ 
+   JMP FIN
+ 
+FIN:       
+ 
+    RET
+ 
+ASCII_BINARIO ENDP
+ 
+ 
+TECL PROC
+ 
+    MOV AH, 10H
+ 
+    INT 16H
+ 
+    CMP AL,00
+ 
+    JE SITCL
+ 
+    CMP AL, 0E0H
+ 
+    JE SITCL
+ 
+    JMP FINTCL
+ 
+    SITCL:
+ 
+    CMP AH, 4DH
+ 
+    JE DER
+ 
+    CMP AH, 4BH
+ 
+    JE IZQ
+ 
+    JMP FINTCL
+ 
+    DER:
+ 
+    MOV SELECT, 1
+ 
+    JMP FINTCL
+ 
+    IZQ:
+ 
+    MOV SELECT, 0
+ 
+    JMP FINTCL
+ 
+    FINTCL:
+ 
+    RET
+ 
+TECL ENDP
+ 
+ 
+TEXT PROC
+ 
+    MOV AH, 00
+ 
+    MOV AL, 02H
+ 
+    INT 10H
+ 
+    RET
+ 
+TEXT ENDP
+ 
+ 
+SALIR_DOS PROC
+ 
+   MOV AH,4CH
+ 
+   INT 21H
+ 
+RET
+ 
+SALIR_DOS ENDP
+ 
+ 
+ESCRIBIR_C PROC
+ 
+    PUSH AX
+ 
+    MOV AH,02
+ 
+    INT 21H
+ 
+    POP AX
+ 
+    RET
+ 
+ESCRIBIR_C ENDP
+ 
+ 
+LEEC PROC
+ 
+    MOV AH, 1
+ 
+    INT 21H
+ 
+    RET
+ 
+LEEC ENDP
+ 
+ 
+LEEC_SE PROC
+ 
+    MOV AH, 7
+ 
+    INT 21H
+ 
+    RET
+ 
+LEEC_SE ENDP
+ 
+ 
+LEE_CAD PROC
+ 
+    LEA DX, INGRESO
+ 
+    MOV AH, 0AH
+ 
+    INT 21H
+ 
+    RET
+ 
+LEE_CAD ENDP
+ 
+ 
+SALTA_L PROC
+ 
+    PUSH DX
+ 
+    MOV DL, 0AH
+ 
+    CALL ESCRIBIR_C
+ 
+    MOV DL, 0DH
+ 
+    CALL ESCRIBIR_C
+ 
+    POP DX
+ 
+    RET
+ 
+SALTA_L ENDP
+ 
+BINARIO_ASCII PROC ;COMPROMETE DL
+ 
+        CMP DL, 9H
+ 
+        JG SUMA37
+ 
+        ADD DL, 30H
+ 
+        JMP FINAL
+ 
+SUMA37:     ADD DL, 37H
+ 
+FINAL:      RET
+ 
+    BINARIO_ASCII ENDP
+ 
+ 
+DESEMPAQUETAR PROC
+ 
+        PUSH DX
+ 
+        PUSH CX
+ 
+        MOV DH, DL
+ 
+        MOV CL,4
+ 
+        SHR DL,CL
+ 
+        CALL BINARIO_ASCII
+ 
+        ;MOV [SI], DL
+ 
+        ;INC SI
+ 
+        CALL ESCRIBIR_C
+ 
+        MOV DL,DH
+ 
+        AND DL,0FH
+ 
+        CALL BINARIO_ASCII
+ 
+        ;MOV [SI],DL
+ 
+        ;INC SI
+ 
+        CALL ESCRIBIR_C
+ 
+        POP CX
+ 
+        POP DX
+ 
+        RET
+ 
+DESEMPAQUETAR ENDP
+ 
+ESPACIO_D PROC
+ 
+    PUSH DX
+ 
+    SUB DX, DX
+ 
+    MOV DL, 20H
+ 
+    CALL ESCRIBIR_C
+ 
+    POP DX
+ 
+    RET
+ 
+ESPACIO_D ENDP
+ 
+GUION_D PROC
+ 
+    PUSH DX
+ 
+    SUB DX,DX
+ 
+    MOV  DL,02DH
+ 
+    CALL ESCRIBIR_C
+ 
+    POP  DX
+ 
+ 
+    RET
+ 
+GUION_D ENDP
+ 
+CODESG ENDS
+ 
+END MAIN

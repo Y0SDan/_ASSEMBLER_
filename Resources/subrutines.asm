@@ -16,7 +16,7 @@ SALIR_DOS PROC
    RET
 SALIR_DOS ENDP
 
-;igual a mensaje pero el servicio es 09 en vez de 09H ¿habra alguna diffeencia?
+;Escribe cadena en terminal, la cadena debe de estar en DX
 escribeCad PROC
     PUSH AX
     MOV  AH,09H
