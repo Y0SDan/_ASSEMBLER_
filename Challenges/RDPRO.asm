@@ -28,6 +28,8 @@
 
         ;Menu
         REGRESA:
+                MOV AX, 0003H
+                INT 10H
                 CALL salta    
                 CALL salta    
                 LEA  DX,MEN1
@@ -126,6 +128,7 @@
     up&down ENDP
 
     wordSplitter PROC
+        ;PUSH DX
         LEA DX, MSG1
         CALL salta
         CALL salta
@@ -139,11 +142,11 @@
         CALL escribeCad
         CALL salta
     
-        LEA SI, CADENA+2
+        LEA SI, CADENA2+2
         
         LEER:
             MOV DL,[SI]
-            CMP DL,36
+            CMP DL, 36
             JE  FIN2
             CMP DL,32
             JE  I
@@ -154,7 +157,11 @@
         I:  INC SI
             JMP LEER   
     
-        FIN2: RET
+        FIN2:
+        MOV AX, 0100H
+        INT 21H 
+        RET
+        ;POP DX
     wordSplitter ENDP
 
 ;-------------------------Subrutinas esenciales-------------------------
@@ -171,6 +178,8 @@
         MOV AH,0AH      ;lee por buffer
         INT 21H 
         POP  AX
+        
+        
     leeCadxBuf ENDP
 
     escribeCad PROC
@@ -283,10 +292,10 @@
     writing PROC
         L:
             MOV  DL,[SI]
-            CALL escribeChar
-            INC  SI
             CMP  DL,36
             JE   BYE
+            CALL escribeChar
+            INC  SI
             CMP  DL,32
             JNE  L
         
