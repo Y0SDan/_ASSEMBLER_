@@ -2,13 +2,13 @@
 .STACK 100
 
 .DATA
-    MEN1       DB '                         1 -> up&down$'
-    MEN2       DB '                         2 -> Separa$'
+    MEN1       DB '                         1 -> up & down$'
+    MEN2       DB '                         2 -> word splitter$'
     MEN3       DB '                         3 -> Salir$'
     MEN4       DB '                         Escoge una opcion: $'
     MENSAJE    DB 'El menu funciona$'
     ;Instrucciones para up&down
-    INTS1      DB 'Ingrese una oración o palabra: $'
+    INTS1      DB 'Ingrese su mensaje: $'
     CADENA     DB 40, ?, 40 DUP('$'),'$'
     INVERSE    DB 40 DUP ('$'),'$'
 
@@ -47,29 +47,28 @@
                 CMP  AL,"2"
                 JE   DOS
                 CMP  AL,"3"
-                JE   salir
+                JE   FIN
                 JG   REGRESA ;Salta si es mayor
         UNO:    CALL up&down
-                JMP REGRESA
-        DOS:    CALL separa
-                JMP REGRESA
+                JMP  REGRESA
+        DOS:    CALL wordSplitter
+                JMP  REGRESA
+
+        FIN:    CALL salir                
 
                 RET
 
     MAIN ENDP
 ;-------------------------Subrutinas rograma principal------------------
     up&down PROC ;escribe una cadena arriba o al revez abajo
-        MOV AH,00   ;Limpia la zona alta de AX
-        MOV AL,12H  ;Servicio 12H "Modo video"
-        INT 10H     ;Juega con la pantalla
+        CALL modoVideo
 
         LEA DX,INTS1
         CALL escribeCad
         CALL salta
         
-        LEA DX,CADENA   ;buffer
-        MOV AH,0AH      ;lee por buffer
-        INT 21H         
+        LEA  DX,CADENA   ;buffer
+        CALL leeCadxBuf       
 
         MOV CL,CADENA + 1 ;Metemos la longitud de la cadena
         MOV CH,0          ;Vaciamos CH
@@ -77,25 +76,79 @@
         ADD SI,CX         ;Le sumamos CX para que ahora SI al final de la cadena
         LEA DI,INVERSE    ;Apuntamos DI al inicio de lo que sera el mensaje invertido
         DEC SI            ;Como apunta a un '$' se lo quitamos
-    
+        
+        CICLO:  ;Copiamos lo que apunta SI a lo que apunta DI
+                MOV  BL,[SI]
+                MOV  [DI],BL
+                INC  DI
+                DEC  SI
+                LOOP CICLO
 
+        CALL limpiarPantalla
 
-        RET
+        LEE: ;Procesa las teclas presionadas
+            CALL leeCaracter
+            CMP  AL,00      ;Determina el valor ascci de algunas teclas extendidas 00 | E0H
+            JE   TECLAS
+            CMP  AL,0E0H    ;Determina el valor ascci de algunas teclas extendidas 00 | E0H
+            JE   TECLAS
+            CMP  AH,01H     ;Determina si la tecla Esc (escape) para salir (Rastreo)
+            JE   salir
+            JMP  LEE
+
+        TECLAS: ;Como la tecla presionada se sigue guardando en A
+                CMP AH,48H ;Compara el codigo de rastreo de la tecla arriba
+                JE  UP
+                CMP AH,50H ;Compara el codigo de rastreo de la tecla abajo
+                JE  DOWN 
+                JMP LEE
+
+        UP: 
+            CALL limpiarPantalla
+            CALL centroUP        ;Posiciona el cursor arriba en el centro
+            SUB  DX,DX
+            LEA  DX,CADENA + 2   ;Posiciona el inicio de la cadena almacenada en buffer en DX
+            CALL escribeCad
+            JMP  LEE
+
+        DOWN:
+             CALL limpiarPantalla
+             CALL centroDOWN
+             SUB  DX,DX
+             LEA  DX,INVERSE
+             CALL escribeCad
+             JMP  LEE
+             
+             RET
     up&down ENDP
 
-    separa PROC
-        MOV AH,00
-        MOV AL,12H
-        INT 10H
+    wordSplitter PROC
+        MOV  AH,00
+        MOV  AL,12H
+        INT  10H
         CALL salta
-        LEA DX,MENSAJE
+        LEA  DX,MENSAJE
         CALL escribeCad
         CALL salta
         CALL escribeCad
         RET
-    separa ENDP
+    wordSplitter ENDP
 
 ;-------------------------Subrutinas esenciales-------------------------
+    ;Lee un caracter de teclado expandido sin eco usando el servicion 10H de la int 16H (Lo guarda en AL)
+    leeCaracter PROC
+        MOV AH,10H
+        INT 16H
+        RET
+    leeCaracter ENDP
+
+    ;Lee una cadena x buffer
+    leeCadxBuf PROC
+        PUSH AX
+        MOV AH,0AH      ;lee por buffer
+        INT 21H 
+        POP  AX
+    leeCadxBuf ENDP
 
     escribeCad PROC
         PUSH AX
@@ -135,5 +188,59 @@
         INT 21H
         RET
     salir ENDP
+
+    ;Limpia pantalla (la sobreescribe cn un color)
+    limpiarPantalla PROC
+        PUSH AX
+        PUSH BX
+        PUSH CX
+        PUSH DX
+        MOV  AX,0600h    ;El servicio
+        MOV  BH,7Ch      ;Fondo blanco con primer plano azul
+        MOV  CX,0000H    ;coordenada inicial
+        MOV  DX,0FFFFH    ;coordenada final
+        INT  10h
+        POP  DX
+        POP  CX
+        POP  BX
+        POP  AX
+        RET
+    limpiarPantalla ENDP
+
+    centroUP PROC
+        MOV AH,0
+        MOV AL,CADENA + 1 ;Movemos a AL la longitud de la cadena
+        MOV BL,2          ;BL = 2
+        DIV BL            ;Dividimos AL/BL
+        MOV BH,0          ;Página
+        MOV DH,0          ;Fila
+        MOV DL,40         ;Le asignamos 40 a DL para despues restarle la cadena y tener el cursos centrado
+        SUB DL,AL         ;DL tiene la (columna) long de la cadena - 40 para que este centrado 
+        MOV AH,2          ;Servicio 02H de la interupcion 10 que posiciona el cursor
+        INT 10H
+        RET
+    centroUP ENDP
+
+    centroDOWN PROC
+        MOV AH,0
+        MOV AL,CADENA + 1 ;Movemos a AL la longitud de la cadena ¿porque +1?
+        MOV BL,2          ;BL = 2
+        DIV BL            ;Dividimos AL/BL
+        MOV BH,0          ;Página
+        MOV DH,29         ;Fila
+        MOV DL,40         ;Le asignamos 40 a DL para despues restarle la cadena y tener el cursos centrado
+        SUB DL,AL         ;DL tiene la (columna) long de la cadena - 40 para que este centrado 
+        MOV AH,2          ;Servicio 02H de la interupcion 10 que posiciona el cursor
+        INT 10H
+        RET
+    centroDOWN ENDP
+
+    modoVideo PROC
+        MOV AH,00   ;Limpia la zona alta de AX
+        MOV AL,12H  ;Servicio 12H "Modo video" 640 x 480
+        INT 10H     ;Juega con la pantalla
+
+        RET
+    modoVideo ENDP        
 
 END MAIN    
