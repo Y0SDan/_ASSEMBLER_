@@ -11,8 +11,10 @@
     INTS1      DB 'Ingrese su mensaje: $'
     CADENA     DB 40, ?, 40 DUP('$'),'$'
     INVERSE    DB 40 DUP ('$'),'$'
-
-    
+    ;Instrucciones para wordSplitter
+    MSG1       DB 'Ingresa tu mensaje: $'
+    CADENA2    DB 100, ?, 100 DUP('$'),'$'
+    MSG2       DB 'Resultado:$'
 
 .CODE 
     MAIN PROC FAR
@@ -52,6 +54,7 @@
         UNO:    CALL up&down
                 JMP  REGRESA
         DOS:    CALL wordSplitter
+                CALL limpia
                 JMP  REGRESA
 
         FIN:    CALL salir                
@@ -93,7 +96,7 @@
             CMP  AL,0E0H    ;Determina el valor ascci de algunas teclas extendidas 00 | E0H
             JE   TECLAS
             CMP  AH,01H     ;Determina si la tecla Esc (escape) para salir (Rastreo)
-            JE   salir
+            JE   ADIOS
             JMP  LEE
 
         TECLAS: ;Como la tecla presionada se sigue guardando en A
@@ -119,19 +122,39 @@
              CALL escribeCad
              JMP  LEE
              
-             RET
+        ADIOS:   RET
     up&down ENDP
 
     wordSplitter PROC
-        MOV  AH,00
-        MOV  AL,12H
-        INT  10H
+        LEA DX, MSG1
         CALL salta
-        LEA  DX,MENSAJE
-        CALL escribeCad
         CALL salta
         CALL escribeCad
-        RET
+    
+        LEA DX, CADENA2
+        CALL leeCadxBuf
+        CALL salta
+    
+        LEA DX, MSG2
+        CALL escribeCad
+        CALL salta
+    
+        LEA SI, CADENA+2
+        
+        LEER:
+            MOV DL,[SI]
+            CMP DL,36
+            JE  FIN2
+            CMP DL,32
+            JE  I
+            CALL writing
+            CALL salta
+            JMP LEER
+
+        I:  INC SI
+            JMP LEER   
+    
+        FIN2: RET
     wordSplitter ENDP
 
 ;-------------------------Subrutinas esenciales-------------------------
@@ -241,6 +264,33 @@
         INT 10H     ;Juega con la pantalla
 
         RET
-    modoVideo ENDP        
+    modoVideo ENDP 
+
+    ;-------------------------------------Subrutinas creadas para este programa----------------
+    limpia PROC 
+            LEA SI,CADENA2 + 2   ;<---- antes de llamar a la subrutina
+        L1: MOV DL,[SI]
+            CMP DL,36
+            JE  EXIT
+            MOV DL,'$'
+            MOV [SI],DL
+            INC SI
+            JMP L1
+
+       EXIT: RET   
+    limpia ENDP
+    
+    writing PROC
+        L:
+            MOV  DL,[SI]
+            CALL escribeChar
+            INC  SI
+            CMP  DL,36
+            JE   BYE
+            CMP  DL,32
+            JNE  L
+        
+        BYE:RET
+    writing ENDP       
 
 END MAIN    
