@@ -40,7 +40,7 @@ leerCadena PROC
     RET
 leerCadena ENDP
 
-;Lee un caracter con eco (desde teclado)
+;Lee un caracter con eco (desde teclado) El registo de guarda en AL
 leeChar_conEco PROC
     PUSH AX
     MOV  AH,01
