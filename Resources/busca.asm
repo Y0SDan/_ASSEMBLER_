@@ -24,15 +24,15 @@ CALL LEE; AL  = CARACTER PRESIONADO
 mov bl,al
 call salta
 
-;LEA DX,INST2
-;CALL MENSAJE
-;CALL LEE
-;MOV Bh,AL
-;ADD BH,0
-;call salta
+LEA DX,INST2
+CALL MENSAJE
+CALL LEE
+MOV Bh,AL
+ADD BH,0
+call salta
 
-;MOV BL,"O"
-MOV BH,"A"
+;MOV BL,"A"
+;MOV BH,"O"
 
 CLD
 L:MOV AL,BL
@@ -55,12 +55,11 @@ INICIO endp
 
 
 LEE proc
-push ax
 mov ah,01h
 int 21h
-pop ax
 ret
 LEE endp
+
 FIN PROC
 push ax
 mov ah,4ch
