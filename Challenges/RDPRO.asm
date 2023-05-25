@@ -179,7 +179,7 @@
         INT 21H 
         POP  AX
         
-        
+        RET
     leeCadxBuf ENDP
 
     escribeCad PROC
