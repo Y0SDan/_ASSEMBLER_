@@ -13,16 +13,8 @@
     LINEA8   DB 100,?,100 DUP('$'),'$'
     LINEA9   DB 100,?,100 DUP('$'),'$'
     LINEA10  DB 100,?,100 DUP('$'),'$'
-    NEWLINE1  DB 100 DUP ('$'),'$'
-    NEWLINE2  DB 100 DUP ('$'),'$'
-    NEWLINE3  DB 100 DUP ('$'),'$'
-    NEWLINE4  DB 100 DUP ('$'),'$'
-    NEWLINE5  DB 100 DUP ('$'),'$'
-    NEWLINE6  DB 100 DUP ('$'),'$'
-    NEWLINE7  DB 100 DUP ('$'),'$'
-    NEWLINE8  DB 100 DUP ('$'),'$'
-    NEWLINE9  DB 100 DUP ('$'),'$'
-    NEWLINE10  DB 100 DUP ('$'),'$'
+    INST1 DB 'DIGITA EL CARACTER A BUSCAR:$'
+    INST2 DB 'DIGITA EL CARACTER QUE VA A REMPLAZAR AL CARAACTER BUSCADO:$'
 
 
 .CODE
@@ -70,38 +62,309 @@
         CALL leeCadxBuf
         CALL salta
 
+        CALL busca
+
 
 
         RET
     MAIN ENDP
     ;--------------- Subrutinas del programa-----------
     busca PROC
-        ;LEA DX,INST1
-CALL MENSAJE
-CALL LEE; AL  = CARACTER PRESIONADO
-mov bl,al
+        LEA  DX,INST1
+        CALL MENSAJE
+        CALL LEE; AL  = CARACTER PRESIONADO
+        mov  BL,AL
+        call salta
+
+        LEA  DX,INST2
+        CALL MENSAJE
+        CALL LEE
+        MOV  BH,AL
+        call salta
+        sub dx,dx
+
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA1
+        
+        L1:
+            CMP   [DI],'$'
+            JE    EXIT1
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT1
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L1
+
+        EXIT1: 
+            SUB CX,CX
+            LEA SI, LINEA1 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA1 + 2
+            LEA SI,LINEA1 + 2
+                
+                O9:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O9
 call salta
+;---------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA2
+        
+        L2:
+            CMP   [DI],'$'
+            JE    EXIT2
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT2
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L2
 
-LEA DX,INST2
-CALL MENSAJE
-CALL LEE
-MOV Bh,AL
-ADD BH,0
+        EXIT2: 
+            SUB CX,CX
+            LEA SI, LINEA2 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA2 + 2
+                LEA SI,LINEA2 + 2
+                
+                O2:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O2
+                    call salta
+;---------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA3
+        
+        L3:
+            CMP   [DI],'$'
+            JE    EXIT3
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT3
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L3
+
+        EXIT3: 
+            SUB CX,CX
+            LEA SI, LINEA3 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA3 + 2
+                LEA SI,LINEA3 + 2
+                
+                O3:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O3
+                    call salta
+;--------------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA4
+        
+        L4:
+            CMP   [DI],'$'
+            JE    EXIT4
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT4
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L4
+
+        EXIT4: 
+            SUB CX,CX
+            LEA SI, LINEA4 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA4 + 2
+                LEA SI,LINEA4 + 2
+                
+                O4:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O4
+                    call salta
+;-------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA5
+        
+        L5:
+            CMP   [DI],'$'
+            JE    EXIT5
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT5
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L5
+
+        EXIT5: 
+            SUB CX,CX
+            LEA SI, LINEA5 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA5 + 2
+                LEA SI,LINEA5 + 2
+                
+                O5:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O5
+                    call salta
+;------------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA6
+        
+        L6:
+            CMP   [DI],'$'
+            JE    EXIT6
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT6
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L6
+
+        EXIT6: 
+            SUB CX,CX
+            LEA SI, LINEA6 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA6 + 2
+                LEA SI,LINEA6 + 2
+                
+                O6:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O6
 call salta
+;---------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA7
+        
+        L7:
+            CMP   [DI],'$'
+            JE    EXIT7
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT7
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L7
 
-MOV BL,"O"
-MOV BH,"A"
+        EXIT7: 
+            SUB CX,CX
+            LEA SI, LINEA7 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA7 + 2
+                LEA SI,LINEA7 + 2
+                
+                O7:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O7
+                    call salta
+;---------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA8
+        
+        L8:
+            CMP   [DI],'$'
+            JE    EXIT8
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT8
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L8
 
-CLD
-L:MOV AL,BL
-CMP [DI],'$'
-JE EXIT
-MOV CX,11
-LEA DI,MEN1
-REPNE SCASB
-JNE EXIT
-DEC DI ; DECREMENTAR LA DIRECCION PARA HACER EL REMPLAZO
-MOV BYTE PTR[DI],BH ;mover un byte a la localidad apuntada por DI
+        EXIT8: 
+            SUB CX,CX
+            LEA SI, LINEA8 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA8 + 2
+                LEA SI,LINEA8 + 2
+                
+                O8:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O8
+                    call salta
+;--------------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA9
+        
+        L9:
+            CMP   [DI],'$'
+            JE    EXIT9
+            MOV   CX,100
+            REPNE SCASB
+            JNE   EXIT9
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L9
+
+        EXIT9: 
+            SUB CX,CX
+            LEA SI, LINEA9 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA9 + 2
+            LEA SI,LINEA9 + 2
+                
+                O:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O
+                    call salta
+;-------------------------------------------------
+        CLD
+        MOV AL,BL
+        LEA DI,LINEA10
+        
+        L10:
+            CMP   [DI],'$'
+            JE    EXIT10
+            MOV   CX,100    
+            REPNE SCASB
+            JNE   EXIT10
+            DEC   DI
+            MOV BYTE PTR [DI],BH
+            INC DX
+            JMP L10
+
+        EXIT10: 
+            SUB CX,CX
+            LEA SI, LINEA10 + 1
+            MOV CL, [SI]
+            LEA DI, LINEA10 + 2
+                LEA SI,LINEA10 + 2
+                
+                O10:  MOV DL,[DI]
+                    INC DI
+                    CALL escribeChar
+                    LOOP O10
+                    call salta
+;------------------------------------------------------
+                
+                CALL FIN
 
         RET
     busca ENDP
@@ -152,5 +415,54 @@ MOV BYTE PTR[DI],BH ;mover un byte a la localidad apuntada por DI
             
         RET
     leeChar_conEco ENDP
+
+    LEE proc
+        mov ah,01h
+        int 21h
+        ret
+    LEE endp
+
+    FIN PROC
+        push ax
+        mov ah,4ch
+        int 21h
+        pop ax
+    FIN ENDP
+    
+    MENSAJE PROC
+        PUSH AX
+        MOV AH,09H
+        INT 21H
+        POP AX
+        RET
+    MENSAJE ENDP
+
+        ;Toma lo de empaqueta y lo convierte de binario a ascci compromete a DL
+        desempaqueta PROC
+            PUSH DX
+            PUSH CX
+            MOV  DH,DL
+            MOV  CL,4
+            SHR  DL,CL ;CORRIMIENTO A LA DERECHA
+            CALL bin_Ascii
+            CALL escribeChar
+            MOV  DL,DH
+            AND  DL,0FH ; Operrador logico and
+            CALL bin_Ascii
+            CALL escribeChar
+            POP  CX
+            POP  DX
+            RET
+        desempaqueta ENDP
+
+        ;Convierte de binario a ascci
+        bin_Ascii PROC
+                    CMP DL,9H
+                    JG  SUMA37
+                    ADD DL,30H
+                    JMP FIN2
+            SUMA37: ADD DL,37H
+            FIN2:   RET
+        bin_Ascii ENDP 
 
 END MAIN        
