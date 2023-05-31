@@ -4,7 +4,7 @@
 .DATA
     V     DW 1,2,3,4,5,6,7 ;El vector
     SUMA  DW 0
-    MSG1  DB "El mayor es: "
+    MSG1  DB "La suma es: "
     SALTA DB 10,13,"$"
 
 .CODE
@@ -23,11 +23,15 @@
         L:
         MOV AX,[V + BX]
         ADD SUMA,AX
-        ADD BX,2
+        ADD BX,1
         LOOP L
 
-        MOV DX,SUMA
+        SUB BX,BX
+        MOV BX,SUMA
+        MOV DL,BL
         CALL desempaqueta
+        ;MOV DL,BH
+        ;CALL desempaqueta
 
         RET
     MAIN ENDP

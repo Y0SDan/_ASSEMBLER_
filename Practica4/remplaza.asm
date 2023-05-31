@@ -13,8 +13,9 @@
     LINEA8   DB 100,?,100 DUP('$'),'$'
     LINEA9   DB 100,?,100 DUP('$'),'$'
     LINEA10  DB 100,?,100 DUP('$'),'$'
-    INST1 DB 'DIGITA EL CARACTER A BUSCAR:$'
-    INST2 DB 'DIGITA EL CARACTER QUE VA A REMPLAZAR AL CARAACTER BUSCADO:$'
+    INST1    DB 'DIGITA EL CARACTER A BUSCAR:$'
+    INST2    DB 'DIGITA EL CARACTER QUE VA A REMPLAZAR AL CARAACTER BUSCADO:$'
+    MSG2     DB 'La cantidad de caracteres remplazados es: $'  
 
 
 .CODE
@@ -30,6 +31,7 @@
         ;Inicia
         LEA DX,MSG1
         CALL escribeCad
+        CALL salta
 
         LEA DX,LINEA1
         CALL leeCadxBuf
@@ -70,6 +72,7 @@
     MAIN ENDP
     ;--------------- Subrutinas del programa-----------
     busca PROC
+        CALL salta
         LEA  DX,INST1
         CALL MENSAJE
         CALL LEE; AL  = CARACTER PRESIONADO
@@ -81,6 +84,7 @@
         CALL LEE
         MOV  BH,AL
         call salta
+        CALL salta
         sub dx,dx
 
         CLD
@@ -95,7 +99,7 @@
             JNE   EXIT1
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L1
 
         EXIT1: 
@@ -123,7 +127,7 @@ call salta
             JNE   EXIT2
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L2
 
         EXIT2: 
@@ -151,7 +155,7 @@ call salta
             JNE   EXIT3
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L3
 
         EXIT3: 
@@ -179,7 +183,7 @@ call salta
             JNE   EXIT4
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L4
 
         EXIT4: 
@@ -207,7 +211,7 @@ call salta
             JNE   EXIT5
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L5
 
         EXIT5: 
@@ -235,7 +239,7 @@ call salta
             JNE   EXIT6
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L6
 
         EXIT6: 
@@ -263,7 +267,7 @@ call salta
             JNE   EXIT7
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L7
 
         EXIT7: 
@@ -291,7 +295,7 @@ call salta
             JNE   EXIT8
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L8
 
         EXIT8: 
@@ -319,7 +323,7 @@ call salta
             JNE   EXIT9
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L9
 
         EXIT9: 
@@ -347,7 +351,7 @@ call salta
             JNE   EXIT10
             DEC   DI
             MOV BYTE PTR [DI],BH
-            INC DX
+            INC DH
             JMP L10
 
         EXIT10: 
@@ -362,6 +366,14 @@ call salta
                     CALL escribeChar
                     LOOP O10
                     call salta
+        
+        CALL salta
+        CALL salta
+        MOV  CH,DH
+        LEA  DX,MSG2
+        CALL escribeCad
+        MOV  DL,CH
+        CALL desempaqueta
 ;------------------------------------------------------
                 
                 CALL FIN

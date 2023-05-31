@@ -1,0 +1,21 @@
+inicio2 macro
+	PUSH DS
+	SUB AX,AX
+	PUSH AX
+	MOV AX,@data
+	MOV DS,AX ; DS=ES
+	MOV ES,AX
+endm
+
+imprime_num macro numero
+    mov ah,02h
+    mov dl,numero
+    add dl,30h
+    int 21H
+endm
+
+sal_a_dos macro
+	mov ah,4ch
+	int 21h
+
+endm
