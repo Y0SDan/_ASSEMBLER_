@@ -1,21 +1,122 @@
-inicio2 macro
-	PUSH DS
-	SUB AX,AX
-	PUSH AX
-	MOV AX,@data
-	MOV DS,AX ; DS=ES
-	MOV ES,AX
-endm
+ESCRIBIR MACRO CAL
+    PUSH AX
+    PUSH DX
+    MOV AH, 02
+    MOV DL, CAL
+    INT 21H
+    POP DX
+    POP AX
+ENDM
 
-imprime_num macro numero
-    mov ah,02h
-    mov dl,numero
-    add dl,30h
-    int 21H
-endm
+ESCRIBIR_CAD MACRO CAD
+   PUSH AX
+   PUSH DX
+   LEA DX, CAD
+   MOV AH, 09
+   INT 21H
+   POP DX
+   POP AX
+ENDM
 
-sal_a_dos macro
-	mov ah,4ch
-	int 21h
+alimentar_linea MACRO
+    PUSH DX
+    MOV DL,0Ah 
+    ESCRIBIR DL   
+    MOV DL,0Dh 
+    ESCRIBIR DL
+    POP DX
+ENDM
 
-endm
+
+
+
+
+
+ASCII_BINARIO MACRO NUM_A
+   PUSH AX
+   MOV AL, NUM_A
+   CMP AL, 30H
+   JL ERROR
+   CMP AL, 39H
+   JG LETRA
+   SUB AL, 30H
+   JMP FIN
+   LETRA:
+   CMP AL, 41H
+   JL ERROR
+   CMP AL, 46H
+   JG LETRAMIN
+   SUB AL, 37H
+   JMP FIN
+   LETRAMIN:
+   CMP AL, 97
+   JL ERROR
+   CMP AL, 102
+   JG ERROR
+   SUB AL, 97
+   JMP FIN
+   ERROR:
+   MOV AL, 00
+   FIN:
+   MOV NUM_A, AL
+   POP AX
+ENDM
+
+BINARIO_ASCII MACRO NUM_B
+   PUSH AX
+   MOV AL, NUM_B
+   CMP AL, 9H
+   JG SUMA37
+   ADD AL, 30H
+   JMP FINAL
+   SUMA37:
+   ADD AL, 37H
+   FINAL:
+   MOV NUM_B, AX
+   POP AX
+ENDM
+
+DESEMPAQUETAR MACRO NUM_E
+   PUSH DX
+   PUSH CX
+   MOV DL, NUM_E
+   MOV DH, DL
+   MOV CL, 4
+   SHR DL, CL
+   BINARIO_ASCII DL
+   ESCRIBIR DL
+   MOV DL, DH
+   AND DL, 0FH
+   BINARIO_ASCII DL
+   ESCRIBIR DL
+   POP CX
+   POP DX
+ENDM
+
+EMPAQUETAR MACRO NUM_EM
+   PUSH CX
+   PUSH AX
+   MOV AH, 01
+   INT 21H
+   ASCII_BINARIO AL
+   MOV CL, 4
+   SHL AL, CL
+   MOV CH, AL
+   MOV AH, 01
+   INT 21H
+   ASCII_BINARIO AL
+   ADD AL, CH
+   POP CX
+   MOV NUM_EM, AL
+   POP AX
+ENDM
+
+leerCadena MACRO CADENA
+   PUSH DX
+   PUSH AX
+   LEA  DX, CADENA
+   MOV  AH,0AH
+   INT  21H
+   POP  AX
+   POP  DX
+ENDM

@@ -1,2 +1,9 @@
-Fatal: Bad object file record in remplaza.asm near module file offset 0x00000000
+
+ Start  Stop   Length Name               Class
+
+ 00000H 002FCH 002FDH _TEXT              CODE
+ 00300H 007D5H 004D6H _DATA              DATA
+ 007E0H 00843H 00064H STACK              STACK
+
+Program entry point at 0000:0000
 

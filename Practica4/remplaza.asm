@@ -363,7 +363,8 @@ call salta
                 
                 O10:  MOV DL,[DI]
                     INC DI
-                    CALL escribeChar
+                    CALL es
+                    cribeChar
                     LOOP O10
                     call salta
         

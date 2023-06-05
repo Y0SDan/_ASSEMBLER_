@@ -1,81 +1,108 @@
-; Hangman game in TASM
+;Hangman "RichiSoft y asociados :p"
+INCLUDE MACROS.LIB
 
-.model small
-.stack 100h
-.data
-    wordList db 'dog', 'cat', 'bird', 'fish', 'horse', '$'
-    wordLength db 3, 3, 4, 4, 5
-    currentWord db ?
-    currentWordLength db ?
-    displayString db ?, ?, ?, ?, ?, '$'
-    lives db 6
-    guess db ?
-.code
-main proc
-    mov ax, @data
-    mov ds, ax
+.MODEL small
+.STACK 100H
 
-    ; Choose a random word from the list
-    mov ah, 2ch
-    int 21h
-    xor dx, dx
-    mov cx, 5
-    div cx
-    mov currentWord, dl
+.DATA
+    MEN1  DB 'Ingresa frase',10,'(Maximo 20 caracteres)',10,10,'$'
+    WORD1 DB 20,?, 20 DUP ("$"),"$"
+    WORD2 DB 20,?, 20 DUP ("$"),"$"
+    WORD3 DB 20,?, 20 DUP ("$"),"$"
+    WORD4 DB 20,?, 20 DUP ("$"),"$"
+    WORD5 DB 20,?, 20 DUP ("$"),"$"
 
-    ; Set the current word length and display string
-    mov bx, offset wordLength
-    xor ax, ax
-    mov al, currentWord
-    add bx, ax
-    mov al, [bx]
-    mov currentWordLength, al
-    xor cx, cx
-    mov cl, currentWordLength
-set_display_string:
-    mov bx, offset displayString
-    add bx, cx
-    dec bx
-    mov byte ptr [bx], '_'
-    loop set_display_string
+    WORD_1 DB ?,'$'
+    WORD_2 DB ?,'$'
+    WORD_3 DB ?,'$'
+    WORD_4 DB ?,'$'
+    WORD_5 DB ?,'$'
 
-display_game:
-; Display the current game state
-mov ah, 9
-lea dx, displayString
-int 21h
+    wordLength DB 5 DUP(0)
 
-; Check if the game is over (win or lose)
-cmp lives, 0
-je game_over_lose
-mov si, offset displayString
-check_win:
-lodsb
-cmp al, '_'
-jne continue_game
-jmp check_win
 
-continue_game:
-; Get user input (guess)
-get_input:
-mov ah, 1
-int 21h
-cmp al, 'a'
-jl get_input
-cmp al, 'z'
-jg get_input
-mov guess, al
 
-check_guess:
-; Check if the guess is correct and update the display string accordingly
+.CODE
+    MAIN PROC FAR
+        PUSH DS
+        SUB  AX,AX
+        MOV  AX,@data
+        MOV  DS,AX
+        MOV  ES,AX
 
-game_over_lose:
-; Display losing message
+        ;Start program
+        SUB CX,CX
+        MOV CX,05h        ;Contador para las 5 frases
 
-game_over_win:
-; Display winning message
+        
+        L1:
+            MOV DL,MEN1
+            ESCRIBIR_CAD MEN1
 
-main endp
+            ;Rellenando las 5 frases
+            CMP CX,5
+                JMP C1
+            CMP CX,4
+                JMP C2
+            CMP CX,3
+                JMP C3
+            CMP CX,2
+                JMP C4
+            CMP CX,1
+                JMP C5
+        LUPE:
+            LOOP L1
 
-end main
+        JMP INI_CAD
 
+        C1:
+            leerCadena WORD1
+            alimentar_linea
+            alimentar_linea
+            JMP LUPE
+        C2:
+            leerCadena WORD2
+            alimentar_linea
+            alimentar_linea
+
+            JMP LUPE
+        C3:
+            alimentar_linea
+            alimentar_linea
+            JMP LUPE
+        C4:
+            leerCadena WORD4
+            alimentar_linea
+            alimentar_linea
+            JMP LUPE
+        C5:
+            leerCadena WORD5
+            alimentar_linea
+            alimentar_linea
+            JMP LUPE
+
+        ;Crea la cadena con guiones y con la extensión actual de la cadena
+        INI_CAD:
+            SUB CX,CX
+            LEA SI,WORD1 + 2
+
+        LOOP_START:
+            MOV AL,[SI]
+            CMP AL,'$'
+            JE  LOOP_END
+
+            INC CX      ;Incrementar el contador de longitud
+            INC SI      ;Avanzar al siguiente caracter
+        JMP LOOP_START
+
+        LOOP_END:
+
+        MOV SI,0
+        MOV wordLength[SI],CL
+
+        DESEMPAQUETAR wordLength[SI]
+
+        BYE:
+            salir
+    MAIN ENDP
+END MAIN    
