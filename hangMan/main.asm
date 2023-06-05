@@ -12,11 +12,11 @@ INCLUDE MACROS.LIB
     WORD4 DB 20,?, 20 DUP ("$"),"$"
     WORD5 DB 20,?, 20 DUP ("$"),"$"
 
-    WORD_1 DB ?,'$'
-    WORD_2 DB ?,'$'
-    WORD_3 DB ?,'$'
-    WORD_4 DB ?,'$'
-    WORD_5 DB ?,'$'
+    WORD_1 DB 250 DUP("$"),'$'
+    WORD_2 DB 250 DUP("$"),'$'
+    WORD_3 DB 250 DUP("$"),'$'
+    WORD_4 DB 250 DUP("$"),'$'
+    WORD_5 DB 250 DUP("$"),'$'
 
     wordLength DB 5 DUP(0)
 
@@ -31,78 +31,101 @@ INCLUDE MACROS.LIB
         MOV  ES,AX
 
         ;Start program
-        SUB CX,CX
-        MOV CX,05h        ;Contador para las 5 frases
-
         
-        L1:
             MOV DL,MEN1
             ESCRIBIR_CAD MEN1
 
-            ;Rellenando las 5 frases
-            CMP CX,5
-                JMP C1
-            CMP CX,4
-                JMP C2
-            CMP CX,3
-                JMP C3
-            CMP CX,2
-                JMP C4
-            CMP CX,1
-                JMP C5
-        LUPE:
-            LOOP L1
-
-        JMP INI_CAD
-
-        C1:
             leerCadena WORD1
             alimentar_linea
             alimentar_linea
-            JMP LUPE
-        C2:
+
+            MOV DL,MEN1
+            ESCRIBIR_CAD MEN1
+
             leerCadena WORD2
             alimentar_linea
             alimentar_linea
 
-            JMP LUPE
-        C3:
+            MOV DL,MEN1
+            ESCRIBIR_CAD MEN1
+
+            leerCadena WORD3
             alimentar_linea
             alimentar_linea
-            JMP LUPE
-        C4:
+
+            MOV DL,MEN1
+            ESCRIBIR_CAD MEN1
+
             leerCadena WORD4
             alimentar_linea
             alimentar_linea
-            JMP LUPE
-        C5:
+
+            MOV DL,MEN1
+            ESCRIBIR_CAD MEN1
+ 
             leerCadena WORD5
             alimentar_linea
             alimentar_linea
-            JMP LUPE
 
         ;Crea la cadena con guiones y con la extensión actual de la cadena
         INI_CAD:
             SUB CX,CX
             LEA SI,WORD1 + 2
 
+            alimentar_linea
+            alimentar_linea
+            ESCRIBIR [SI]
+            alimentar_linea
+            alimentar_linea
+
+
         LOOP_START:
             MOV AL,[SI]
             CMP AL,'$'
             JE  LOOP_END
-
-            INC CX      ;Incrementar el contador de longitud
-            INC SI      ;Avanzar al siguiente caracter
+            CMP AL,32
+            JE SUBS
+            S:
+              INC CX      ;Incrementar el contador de longitud
+              INC SI      ;Avanzar al siguiente caracter
         JMP LOOP_START
+
+        SUBS: 
+            DEC CL
+            JMP S
 
         LOOP_END:
 
         MOV SI,0
+        SUB CL,1
         MOV wordLength[SI],CL
 
         DESEMPAQUETAR wordLength[SI]
+        alimentar_linea
+
+        LEA SI,WORD1 + 2
+        LEA DI,WORD_1
+        L1:
+            MOV AL,[SI]
+            CMP AL,'$'
+            JE BYE
+            CMP AL,32
+            JE ESP
+            MOV [DI],'_'
+            G:
+              INC DI
+              INC SI
+        LOOP L1
+        
+        ESP:
+            MOV [DI],32
+            JMP G
+
 
         BYE:
+            ESCRIBIR_CAD WORD_1
+            alimentar_linea
+            alimentar_linea
             salir
     MAIN ENDP
 END MAIN    
